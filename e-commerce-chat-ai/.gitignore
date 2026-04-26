@@ -1,0 +1,28 @@
+# Entorno virtual de Python
+venv/
+env/
+
+# Variables de entorno (contienen API keys secretas)
+.env
+
+# Base de datos local (se genera automáticamente)
+data/
+*.db
+
+# Archivos compilados de Python (se generan solos)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
