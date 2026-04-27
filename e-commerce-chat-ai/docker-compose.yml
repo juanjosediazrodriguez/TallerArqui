@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  api:
+    # Construir la imagen desde el Dockerfile en el directorio actual
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Nombre del contenedor (visible en docker ps y Docker Desktop)
+    container_name: ecommerce-api
+
+    # Mapeo de puertos: puerto_host:puerto_contenedor
+    # Puedes acceder desde tu máquina en localhost:8000
+    ports:
+      - "8000:8000"
+
+    # Cargar variables de entorno desde el archivo .env
+    env_file:
+      - .env
+
+    # Variables de entorno adicionales (sobreescriben las del .env si se repiten)
+    environment:
+      - DATABASE_URL=sqlite:///./data/ecommerce_chat.db
+      - ENVIRONMENT=development
+
+    # Volúmenes montados:
+    # - ./data:/app/data  → La base de datos SQLite persiste aunque el contenedor se reinicie
+    # - .:/app            → Cambios en el código local se reflejan en el contenedor (desarrollo)
+    volumes:
+      - ./data:/app/data
+      - .:/app
+
+    # En modo desarrollo usamos --reload para que la API se reinicie al guardar cambios
+    command: uvicorn src.infrastructure.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+    # Reiniciar el contenedor automáticamente si falla
+    restart: unless-stopped
+
+    # Health check: Docker verifica cada 30s que la API responde correctamente
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
