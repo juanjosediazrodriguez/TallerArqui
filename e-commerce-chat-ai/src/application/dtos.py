@@ -6,7 +6,7 @@ la API (infraestructura) y los servicios de aplicación. Usan Pydantic
 para validación automática de tipos y valores.
 """
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import datetime
 
@@ -40,7 +40,8 @@ class ProductDTO(BaseModel):
     stock: int
     description: str
 
-    @validator("price")
+    @field_validator("price")
+    @classmethod
     def price_must_be_positive(cls, v):
         """
         Valida que el precio del producto sea mayor a 0.
@@ -58,7 +59,8 @@ class ProductDTO(BaseModel):
             raise ValueError("El precio debe ser mayor a 0")
         return v
 
-    @validator("stock")
+    @field_validator("stock")
+    @classmethod
     def stock_must_be_non_negative(cls, v):
         """
         Valida que el stock no sea negativo.
@@ -96,7 +98,8 @@ class ChatMessageRequestDTO(BaseModel):
     session_id: str
     message: str
 
-    @validator("message")
+    @field_validator("message")
+    @classmethod
     def message_not_empty(cls, v):
         """
         Valida que el mensaje no esté vacío ni contenga solo espacios.
@@ -114,7 +117,8 @@ class ChatMessageRequestDTO(BaseModel):
             raise ValueError("El mensaje no puede estar vacío")
         return v
 
-    @validator("session_id")
+    @field_validator("session_id")
+    @classmethod
     def session_id_not_empty(cls, v):
         """
         Valida que el session_id no esté vacío.
